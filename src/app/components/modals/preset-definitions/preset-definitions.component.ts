@@ -1,0 +1,259 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TemplateService, PresetDefinition, FIELD_TYPES } from '../../../services/template.service';
+import { IconComponent } from '../../icon/icon.component';
+
+@Component({
+  selector: 'app-preset-definitions-modal',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IconComponent],
+  template: `
+    <ng-container *ngIf="service.showPresetDefinitionsModal()">
+      <!-- Backdrop -->
+      <div 
+        class="fixed inset-0 z-50 animate-backdrop-fade-in"
+        style="background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"
+        (click)="close()"
+      ></div>
+      
+      <!-- Modal -->
+      <div 
+        class="fixed z-50 bg-white rounded-lg shadow-2xl w-full max-h-[85vh] overflow-hidden animate-modal-fade-in"
+        style="left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 800px;"
+      >
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+          <div class="flex items-center gap-3">
+            <div 
+              class="w-10 h-10 rounded-full flex items-center justify-center"
+              [style.backgroundColor]="service.COLORS.primaryLight"
+            >
+              <app-icon key="settings" [style.color]="service.COLORS.primary" className="w-5 h-5"></app-icon>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-900">Define Presets</h2>
+          </div>
+          <button
+            (click)="close()"
+            class="text-gray-400 hover:text-gray-600 transition-colors p-1"
+          >
+            <app-icon key="settings" className="w-5 h-5 rotate-45"></app-icon>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="overflow-y-auto custom-scrollbar" style="max-height: calc(85vh - 130px);">
+          <div class="p-6">
+            <p class="text-sm text-gray-600 mb-6">
+              Customize what each preset configuration includes. These settings will be applied when users select a preset in their preferences.
+            </p>
+            
+            <div class="space-y-6">
+              <!-- Field Configuration Options Section -->
+              <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Field Configuration Options</p>
+                
+                <table class="w-full text-left">
+                  <thead>
+                    <tr>
+                      <th class="pb-3 pr-4"></th>
+                      <th *ngFor="let preset of presets" class="text-center pb-3 px-3">
+                        <span class="text-sm font-semibold text-gray-900 capitalize">{{ preset }}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-t border-gray-200">
+                      <td class="py-3 pr-4 text-sm text-gray-900">Show "Required" checkbox</td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [ngModel]="service.presetDefinitions()[preset].showRequired"
+                          (ngModelChange)="updateDef(preset, 'showRequired', $event)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                    <tr class="border-t border-gray-200">
+                      <td class="py-3 pr-4 text-sm text-gray-900">Show "Allow multiple" checkbox</td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [ngModel]="service.presetDefinitions()[preset].showAllowMultiple"
+                          (ngModelChange)="updateDef(preset, 'showAllowMultiple', $event)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                    <tr class="border-t border-gray-200">
+                      <td class="py-3 pr-4 text-sm text-gray-900">Show "Help Text" field</td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [ngModel]="service.presetDefinitions()[preset].showHelpText"
+                          (ngModelChange)="updateDef(preset, 'showHelpText', $event)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                    <tr class="border-t border-gray-200">
+                      <td class="py-3 pr-4 text-sm text-gray-900">Show "Default Value" field</td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [ngModel]="service.presetDefinitions()[preset].showDefaultValue"
+                          (ngModelChange)="updateDef(preset, 'showDefaultValue', $event)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Feature Visibility Section -->
+              <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Feature Visibility</p>
+                
+                <table class="w-full text-left">
+                  <thead>
+                    <tr>
+                      <th class="pb-3 pr-4"></th>
+                      <th *ngFor="let preset of presets" class="text-center pb-3 px-3">
+                        <span class="text-sm font-semibold text-gray-900 capitalize">{{ preset }}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-t border-gray-200">
+                      <td class="py-3 pr-4 text-sm text-gray-900">Show "Field Designer" button</td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [ngModel]="service.presetDefinitions()[preset].showFieldDesigner"
+                          (ngModelChange)="updateDef(preset, 'showFieldDesigner', $event)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                    <tr class="border-t border-gray-200">
+                      <td class="py-3 pr-4 text-sm text-gray-900">Enable Elements</td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [ngModel]="service.presetDefinitions()[preset].showElements"
+                          (ngModelChange)="updateDef(preset, 'showElements', $event)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Available Field Types Section -->
+              <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-4">Available Field Types</p>
+                
+                <table class="w-full text-left">
+                  <thead>
+                    <tr>
+                      <th class="pb-3 pr-4"></th>
+                      <th *ngFor="let preset of presets" class="text-center pb-3 px-3">
+                        <span class="text-sm font-semibold text-gray-900 capitalize">{{ preset }}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of fieldTypesList" class="border-t border-gray-200">
+                      <td class="py-3 pr-4">
+                        <div class="flex items-center gap-2 text-gray-600">
+                          <app-icon [key]="item.key" className="w-5 h-5"></app-icon>
+                          <span class="text-sm text-gray-900">{{ item.value.label }}</span>
+                        </div>
+                      </td>
+                      <td *ngFor="let preset of presets" class="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          [checked]="!service.presetDefinitions()[preset].hiddenFieldTypes.includes(item.key)"
+                          (change)="toggleFieldType(preset, item.key)"
+                          class="w-4 h-4 checkbox-white cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 bg-white z-10">
+          <button
+            (click)="close()"
+            class="px-4 py-2 text-sm font-medium text-white rounded-lg transition-all shadow hover:shadow-md cursor-pointer"
+            [style.backgroundColor]="service.COLORS.primary"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  `,
+  styles: [`
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #fafafa;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #e5e7eb;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #d1d5db;
+    }
+  `]
+})
+export class PresetDefinitionsModalComponent {
+  readonly service = inject(TemplateService);
+  readonly presets: Array<'basic' | 'semantic' | 'modular'> = ['basic', 'semantic', 'modular'];
+
+  get fieldTypesList() {
+    return Object.entries(FIELD_TYPES).map(([key, value]) => ({ key, value }));
+  }
+
+  updateDef(preset: 'basic' | 'semantic' | 'modular', key: keyof PresetDefinition, value: boolean) {
+    this.service.presetDefinitions.update(prev => ({
+      ...prev,
+      [preset]: {
+        ...prev[preset],
+        [key]: value
+      }
+    }));
+  }
+
+  toggleFieldType(preset: 'basic' | 'semantic' | 'modular', fieldType: string) {
+    this.service.presetDefinitions.update(prev => {
+      const currentHidden = prev[preset].hiddenFieldTypes;
+      const newHidden = currentHidden.includes(fieldType)
+        ? currentHidden.filter(ft => ft !== fieldType)
+        : [...currentHidden, fieldType];
+        
+      return {
+        ...prev,
+        [preset]: {
+          ...prev[preset],
+          hiddenFieldTypes: newHidden
+        }
+      };
+    });
+  }
+
+  close() {
+    this.service.showPresetDefinitionsModal.set(false);
+  }
+}
