@@ -1,5 +1,5 @@
 import { Injectable, signal, effect } from '@angular/core';
-import { UserPreferences, PresetDefinitions, FIELD_TYPES } from '../types';
+import { UserPreferences, PresetDefinitions, FIELD_TYPES } from '../models/types';
 
 @Injectable({
   providedIn: 'root'

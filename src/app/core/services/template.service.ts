@@ -1,53 +1,16 @@
-import { Injectable, signal, effect } from '@angular/core';
-import { Field, Library, CustomField, ControlledTermConfig } from '../types';
+import { Injectable, signal, inject } from '@angular/core';
+import { Field, Library, CustomField, ControlledTermConfig, UserPreferences, FIELD_TYPES } from '../models/types';
+import { PreferencesService } from './preferences.service';
 
-export interface UserPreferences {
-  showRequired: boolean;
-  showAllowMultiple: boolean;
-  showHelpText: boolean;
-  showDefaultValue: boolean;
-  showFieldDesigner: boolean;
-  showElements: boolean;
-  fieldSelectionStyle: 'modal' | 'sidebar';
-  visibleFieldTypes: Record<string, boolean>;
-}
-
-export interface PresetDefinition {
-  showRequired: boolean;
-  showAllowMultiple: boolean;
-  showHelpText: boolean;
-  showDefaultValue: boolean;
-  showFieldDesigner: boolean;
-  showElements: boolean;
-  hiddenFieldTypes: string[];
-}
-
-export interface PresetDefinitions {
-  basic: PresetDefinition;
-  semantic: PresetDefinition;
-  modular: PresetDefinition;
-}
-
-export const FIELD_TYPES: Record<string, { label: string; preview: string }> = {
-  text: { label: 'Text', preview: 'Short answer text' },
-  paragraph: { label: 'Paragraph', preview: 'Long answer text' },
-  multipleChoice: { label: 'Multiple Choice', preview: 'Radio buttons' },
-  checkboxes: { label: 'Checkboxes', preview: 'Multiple selection' },
-  date: { label: 'Date', preview: 'Date picker' },
-  time: { label: 'Time', preview: 'Time picker' },
-  email: { label: 'Email', preview: 'Email address' },
-  link: { label: 'Link', preview: 'URL' },
-  phone: { label: 'Phone', preview: 'Phone number' },
-  number: { label: 'Number', preview: 'Numeric value' },
-  image: { label: 'Image', preview: 'File upload' },
-  orcid: { label: 'ORCID', preview: 'Research identifier' },
-  controlledTerms: { label: 'Controlled Terms', preview: 'Controlled vocabulary' }
-};
+export { FIELD_TYPES } from '../models/types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TemplateService {
+  // Inject PreferencesService
+  readonly preferencesService = inject(PreferencesService);
+
   // Cedar green color palette
   readonly COLORS = {
     primary: '#2D6F5F',      // Cedar green
@@ -59,7 +22,6 @@ export class TemplateService {
   // State Signals
   readonly templateName = signal<string>('Untitled Template');
   readonly templateDesc = signal<string>('');
-  readonly bioportalApiKey = signal<string>(localStorage.getItem('bioportalApiKey') || '');
   
   readonly fields = signal<Field[]>([
     { id: 1, type: 'text', name: 'Title', status: 'required', options: [], defaultValue: '', allowMultiple: false },
@@ -79,91 +41,18 @@ export class TemplateService {
   readonly selectedField = signal<number | null>(null);
   readonly fieldTypeDropdown = signal<number | null>(null);
   readonly fieldTypeDropdownLibrary = signal<number | null>(null);
-  
-  readonly showPreferencesModal = signal<boolean>(false);
-  readonly showPresetDefinitionsModal = signal<boolean>(false);
-  readonly showUserMenu = signal<boolean>(false);
-  readonly showApiKeyModal = signal<boolean>(false);
 
-  // Preset Definitions
-  readonly presetDefinitions = signal<PresetDefinitions>({
-    basic: {
-      showRequired: true,
-      showAllowMultiple: true,
-      showHelpText: false,
-      showDefaultValue: false,
-      showFieldDesigner: false,
-      showElements: false,
-      hiddenFieldTypes: ['controlledTerms']
-    },
-    semantic: {
-      showRequired: true,
-      showAllowMultiple: true,
-      showHelpText: true,
-      showDefaultValue: true,
-      showFieldDesigner: true,
-      showElements: false,
-      hiddenFieldTypes: []
-    },
-    modular: {
-      showRequired: true,
-      showAllowMultiple: true,
-      showHelpText: true,
-      showDefaultValue: true,
-      showFieldDesigner: true,
-      showElements: true,
-      hiddenFieldTypes: []
-    }
-  });
+  // Proxies for PreferencesService State
+  get preferences() { return this.preferencesService.preferences; }
+  get presetDefinitions() { return this.preferencesService.presetDefinitions; }
+  get bioportalApiKey() { return this.preferencesService.bioportalApiKey; }
+  get showPreferencesModal() { return this.preferencesService.showPreferencesModal; }
+  get showPresetDefinitionsModal() { return this.preferencesService.showPresetDefinitionsModal; }
+  get showUserMenu() { return this.preferencesService.showUserMenu; }
+  get showApiKeyModal() { return this.preferencesService.showApiKeyModal; }
 
-  // User Preferences
-  readonly preferences = signal<UserPreferences>({
-    showRequired: true,
-    showAllowMultiple: true,
-    showHelpText: false,
-    showDefaultValue: false,
-    showFieldDesigner: false,
-    showElements: false,
-    fieldSelectionStyle: 'modal',
-    visibleFieldTypes: Object.keys(FIELD_TYPES).reduce((acc, key) => {
-      acc[key] = key !== 'controlledTerms';
-      return acc;
-    }, {} as Record<string, boolean>)
-  });
+  constructor() {}
 
-  constructor() {
-    // Save API key to localStorage when it changes
-    effect(() => {
-      const key = this.bioportalApiKey();
-      if (key) {
-        localStorage.setItem('bioportalApiKey', key);
-      } else {
-        localStorage.removeItem('bioportalApiKey');
-      }
-    });
-
-    // Sync all field types into preferences to ensure nothing is missing
-    const currentFieldTypes = Object.keys(FIELD_TYPES);
-    this.preferences.update(prev => {
-      const updatedVisibleFieldTypes = { ...prev.visibleFieldTypes };
-      let hasChanges = false;
-      
-      currentFieldTypes.forEach(key => {
-        if (!(key in updatedVisibleFieldTypes)) {
-          updatedVisibleFieldTypes[key] = true;
-          hasChanges = true;
-        }
-      });
-      
-      if (hasChanges) {
-        return {
-          ...prev,
-          visibleFieldTypes: updatedVisibleFieldTypes
-        };
-      }
-      return prev;
-    });
-  }
 
   // Field manipulation methods
   addField(type: string, position: number) {
@@ -321,82 +210,24 @@ export class TemplateService {
     });
   }
 
-  // Preferences manipulation methods
+  // Proxies for PreferencesService Methods
   updatePreference(key: keyof UserPreferences, value: any) {
-    this.preferences.update(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    this.preferencesService.updatePreference(key, value);
   }
 
   updateFieldTypeVisibility(fieldType: string, visible: boolean) {
-    this.preferences.update(prev => ({
-      ...prev,
-      visibleFieldTypes: {
-        ...prev.visibleFieldTypes,
-        [fieldType]: visible
-      }
-    }));
+    this.preferencesService.updateFieldTypeVisibility(fieldType, visible);
   }
 
   toggleAllFieldTypes(visible: boolean) {
-    const updatedVisibility: Record<string, boolean> = {};
-    Object.keys(FIELD_TYPES).forEach(key => {
-      updatedVisibility[key] = visible;
-    });
-    this.preferences.update(prev => ({
-      ...prev,
-      visibleFieldTypes: updatedVisibility
-    }));
+    this.preferencesService.toggleAllFieldTypes(visible);
   }
 
   applyPreset(preset: 'basic' | 'semantic' | 'modular') {
-    const definition = this.presetDefinitions()[preset];
-    const visibleFieldTypes = Object.keys(FIELD_TYPES).reduce((acc, key) => {
-      acc[key] = !definition.hiddenFieldTypes.includes(key);
-      return acc;
-    }, {} as Record<string, boolean>);
-
-    this.preferences.update(prev => ({
-      ...prev,
-      showRequired: definition.showRequired,
-      showAllowMultiple: definition.showAllowMultiple,
-      showHelpText: definition.showHelpText,
-      showDefaultValue: definition.showDefaultValue,
-      showFieldDesigner: definition.showFieldDesigner,
-      showElements: definition.showElements,
-      visibleFieldTypes
-    }));
+    this.preferencesService.applyPreset(preset);
   }
 
-  // Checks which preset matches current preferences configuration
   getActivePreset(): 'basic' | 'semantic' | 'modular' | null {
-    const current = this.preferences();
-    const definitions = this.presetDefinitions();
-    
-    for (const preset of ['basic', 'semantic', 'modular'] as const) {
-      const def = definitions[preset];
-      const matchConfig = 
-        current.showRequired === def.showRequired &&
-        current.showAllowMultiple === def.showAllowMultiple &&
-        current.showHelpText === def.showHelpText &&
-        current.showDefaultValue === def.showDefaultValue &&
-        current.showFieldDesigner === def.showFieldDesigner &&
-        current.showElements === def.showElements;
-
-      if (!matchConfig) continue;
-
-      // Check hidden field types
-      const hiddenMatches = Object.keys(FIELD_TYPES).every(key => {
-        const isHiddenInPref = !current.visibleFieldTypes[key];
-        const isHiddenInDef = def.hiddenFieldTypes.includes(key);
-        return isHiddenInPref === isHiddenInDef;
-      });
-
-      if (hiddenMatches) {
-        return preset;
-      }
-    }
-    return null;
+    return this.preferencesService.getActivePreset();
   }
 }

@@ -1,9 +1,9 @@
 import { Component, Input, inject, signal, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TemplateService, FIELD_TYPES } from '../../services/template.service';
-import { CustomField } from '../../types';
-import { IconComponent } from '../icon/icon.component';
+import { TemplateService, FIELD_TYPES } from '../../core/services/template.service';
+import { CustomField } from '../../core/models/types';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-field-type-picker',

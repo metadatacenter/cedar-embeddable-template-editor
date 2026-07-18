@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TemplateService, FIELD_TYPES } from '../../../services/template.service';
-import { IconComponent } from '../../icon/icon.component';
+import { TemplateService, FIELD_TYPES } from '../../../core/services/template.service';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-preferences-modal',

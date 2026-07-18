@@ -50,3 +50,47 @@ export interface Field {
   libraryId?: number;
   controlledTermConfig?: ControlledTermConfig;
 }
+
+export interface UserPreferences {
+  showRequired: boolean;
+  showAllowMultiple: boolean;
+  showHelpText: boolean;
+  showDefaultValue: boolean;
+  showFieldDesigner: boolean;
+  showElements: boolean;
+  fieldSelectionStyle: 'modal' | 'sidebar';
+  visibleFieldTypes: Record<string, boolean>;
+}
+
+export interface PresetDefinition {
+  showRequired: boolean;
+  showAllowMultiple: boolean;
+  showHelpText: boolean;
+  showDefaultValue: boolean;
+  showFieldDesigner: boolean;
+  showElements: boolean;
+  hiddenFieldTypes: string[];
+}
+
+export interface PresetDefinitions {
+  basic: PresetDefinition;
+  semantic: PresetDefinition;
+  modular: PresetDefinition;
+}
+
+export const FIELD_TYPES: Record<string, { label: string; preview: string }> = {
+  text: { label: 'Text', preview: 'Short answer text' },
+  paragraph: { label: 'Paragraph', preview: 'Long answer text' },
+  multipleChoice: { label: 'Multiple Choice', preview: 'Radio buttons' },
+  checkboxes: { label: 'Checkboxes', preview: 'Multiple selection' },
+  date: { label: 'Date', preview: 'Date picker' },
+  time: { label: 'Time', preview: 'Time picker' },
+  email: { label: 'Email', preview: 'Email address' },
+  link: { label: 'Link', preview: 'URL' },
+  phone: { label: 'Phone', preview: 'Phone number' },
+  number: { label: 'Number', preview: 'Numeric value' },
+  image: { label: 'Image', preview: 'File upload' },
+  orcid: { label: 'ORCID', preview: 'Research identifier' },
+  controlledTerms: { label: 'Controlled Terms', preview: 'Controlled vocabulary' }
+};
+

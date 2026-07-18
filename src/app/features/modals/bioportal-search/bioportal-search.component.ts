@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { TemplateService } from '../../../services/template.service';
-import { ControlledTermConfig } from '../../../types';
-import { IconComponent } from '../../icon/icon.component';
+import { TemplateService } from '../../../core/services/template.service';
+import { ControlledTermConfig } from '../../../core/models/types';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 
 export interface BioPortalResult {
   '@id': string;

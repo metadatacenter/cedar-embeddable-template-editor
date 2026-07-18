@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { TemplateService, FIELD_TYPES } from '../../services/template.service';
-import { Field, Library, CustomField } from '../../types';
-import { IconComponent } from '../icon/icon.component';
+import { TemplateService, FIELD_TYPES } from '../../core/services/template.service';
+import { Field, Library, CustomField } from '../../core/models/types';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-field-library-sidebar',

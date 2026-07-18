@@ -2,19 +2,19 @@ import { Component, inject, signal, ElementRef, ViewChild, HostListener } from '
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { TemplateService, FIELD_TYPES } from './services/template.service';
-import { Field, Library, CustomField } from './types';
+import { TemplateService, FIELD_TYPES } from './core/services/template.service';
+import { Field } from './core/models/types';
 
 // Custom components
-import { IconComponent } from './components/icon/icon.component';
-import { FieldLibrarySidebarComponent } from './components/field-library-sidebar/field-library-sidebar.component';
-import { PreferencesModalComponent } from './components/modals/preferences/preferences.component';
-import { PresetDefinitionsModalComponent } from './components/modals/preset-definitions/preset-definitions.component';
-import { ApiKeyModalComponent } from './components/modals/api-key/api-key.component';
-import { PreviewPanelComponent } from './components/preview-panel/preview-panel.component';
-import { ControlledTermConfigComponent } from './components/controlled-term-config/controlled-term-config.component';
-import { FieldTypePickerComponent } from './components/field-type-picker/field-type-picker.component';
-import { FieldDesignerComponent } from './components/field-designer/field-designer.component';
+import { IconComponent } from './shared/components/icon/icon.component';
+import { FieldLibrarySidebarComponent } from './features/field-library-sidebar/field-library-sidebar.component';
+import { PreferencesModalComponent } from './features/modals/preferences/preferences.component';
+import { PresetDefinitionsModalComponent } from './features/modals/preset-definitions/preset-definitions.component';
+import { ApiKeyModalComponent } from './features/modals/api-key/api-key.component';
+import { PreviewPanelComponent } from './features/preview-panel/preview-panel.component';
+import { FieldTypePickerComponent } from './features/field-type-picker/field-type-picker.component';
+import { FieldDesignerComponent } from './features/field-designer/field-designer.component';
+import { FieldCardComponent } from './features/field-card/field-card.component';
 
 @Component({
   selector: 'app-root',
@@ -29,9 +29,9 @@ import { FieldDesignerComponent } from './components/field-designer/field-design
     PresetDefinitionsModalComponent,
     ApiKeyModalComponent,
     PreviewPanelComponent,
-    ControlledTermConfigComponent,
     FieldTypePickerComponent,
-    FieldDesignerComponent
+    FieldDesignerComponent,
+    FieldCardComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']

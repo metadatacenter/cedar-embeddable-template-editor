@@ -1,9 +1,9 @@
 import { Component, Input, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TemplateService } from '../../services/template.service';
-import { Field, ControlledTermConfig as TermConfig } from '../../types';
-import { IconComponent } from '../icon/icon.component';
+import { TemplateService } from '../../core/services/template.service';
+import { Field, ControlledTermConfig as TermConfig } from '../../core/models/types';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-controlled-term-config',

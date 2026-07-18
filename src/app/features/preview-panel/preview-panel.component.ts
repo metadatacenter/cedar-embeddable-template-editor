@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TemplateService, FIELD_TYPES } from '../../services/template.service';
-import { Field } from '../../types';
-import { IconComponent } from '../icon/icon.component';
+import { TemplateService, FIELD_TYPES } from '../../core/services/template.service';
+import { Field } from '../../core/models/types';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 import { BioPortalSearchModalComponent, BioPortalResult } from '../modals/bioportal-search/bioportal-search.component';
 
 @Component({
