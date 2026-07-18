@@ -1,39 +1,38 @@
-<div class="bg-white rounded-lg shadow-lg p-6 animate-fade-in" [style.border]="'2px solid ' + service.COLORS.border">
-  <div class="flex items-center justify-between mb-4">
-    <div class="flex items-center gap-3">
-      <h3 class="text-sm font-medium text-gray-900">Choose field type</h3>
+<div class="picker-container animate-fade-in" [style.border]="'2px solid ' + service.COLORS.border">
+  <div class="picker-header">
+    <div class="picker-header-left">
+      <h3 class="picker-title">Choose field type</h3>
       
       <!-- Library Dropdown with Autocomplete -->
-      <div *ngIf="service.libraries().length > 0" class="relative library-dropdown-container">
+      <div *ngIf="service.libraries().length > 0" class="library-dropdown-container">
         <button
           (click)="showDropdown.set(!showDropdown())"
-          class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white hover:border-gray-400 transition-colors flex items-center gap-2 min-w-[140px] justify-between cursor-pointer"
+          class="btn-library-dropdown"
         >
-          <span class="text-gray-700">{{ selectedLibraryName }}</span>
-          <span class="text-xs text-gray-500">▼</span>
+          <span class="dropdown-text">{{ selectedLibraryName }}</span>
+          <span class="dropdown-arrow">▼</span>
         </button>
 
         <!-- Dropdown Options Panel -->
-        <div *ngIf="showDropdown()" class="absolute top-full left-0 mt-1 bg-white rounded-lg border border-gray-300 shadow-lg z-20 min-w-[200px] animate-fade-in">
+        <div *ngIf="showDropdown()" class="dropdown-panel animate-fade-in">
           <!-- Search Input -->
-          <div class="p-2 border-b border-gray-200">
+          <div class="dropdown-search-box">
             <input
               type="text"
               [(ngModel)]="searchText"
               placeholder="Search libraries..."
-              class="w-full px-2 py-1.5 text-sm border border-gray-300 rounded outline-none focus:border-gray-400"
+              class="dropdown-search-input"
               autoFocus
             />
           </div>
 
           <!-- Options list -->
-          <div class="max-h-60 overflow-y-auto">
+          <div class="dropdown-options-list custom-scrollbar">
             <!-- Standard Option -->
             <button
               (click)="handleSelectLibrary(null)"
-              class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors cursor-pointer"
-              [class.bg-gray-100]="service.fieldTypeDropdownLibrary() === null"
-              [class.font-medium]="service.fieldTypeDropdownLibrary() === null"
+              class="dropdown-option"
+              [class.active]="service.fieldTypeDropdownLibrary() === null"
             >
               Standard
             </button>
@@ -42,13 +41,12 @@
             <button
               *ngFor="let lib of filteredLibraries"
               (click)="handleSelectLibrary(lib.id)"
-              class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors cursor-pointer"
-              [class.bg-gray-100]="service.fieldTypeDropdownLibrary() === lib.id"
-              [class.font-medium]="service.fieldTypeDropdownLibrary() === lib.id"
+              class="dropdown-option"
+              [class.active]="service.fieldTypeDropdownLibrary() === lib.id"
             >
               {{ lib.name }}
             </button>
-            <div *ngIf="filteredLibraries.length === 0 && searchText" class="px-3 py-2 text-sm text-gray-500">
+            <div *ngIf="filteredLibraries.length === 0 && searchText" class="dropdown-empty-state">
               No libraries found
             </div>
           </div>
@@ -58,25 +56,25 @@
 
     <button 
       (click)="close()"
-      class="text-gray-400 hover:text-gray-600 cursor-pointer"
+      class="btn-close"
     >
       <app-icon key="settings" className="w-5 h-5 rotate-45"></app-icon>
     </button>
   </div>
 
   <!-- Custom Fields Section - Only show when a library is selected -->
-  <div *ngIf="service.fieldTypeDropdownLibrary() !== null && libraryCustomFields.length > 0" class="mb-4">
-    <div class="grid grid-cols-4 gap-2">
+  <div *ngIf="service.fieldTypeDropdownLibrary() !== null && libraryCustomFields.length > 0" class="fields-section">
+    <div class="fields-grid">
       <button 
         *ngFor="let customField of libraryCustomFields"
         (click)="onCustomFieldClick(customField)"
-        class="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 transition-all cursor-pointer bg-white"
+        class="btn-field-item"
         [title]="customField.description"
       >
-        <div class="text-gray-600">
+        <div class="field-item-icon">
           <app-icon [key]="customField.baseType" className="w-5 h-5"></app-icon>
         </div>
-        <span class="text-xs text-gray-700 text-center break-words w-full">
+        <span class="field-item-label">
           {{ customField.name }}
         </span>
       </button>
@@ -84,24 +82,24 @@
   </div>
 
   <!-- Message when library is selected but no custom fields -->
-  <div *ngIf="service.fieldTypeDropdownLibrary() !== null && libraryCustomFields.length === 0" class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-    <p class="text-xs text-gray-600 text-center">
+  <div *ngIf="service.fieldTypeDropdownLibrary() !== null && libraryCustomFields.length === 0" class="custom-fields-empty-msg">
+    <p class="custom-fields-empty-text">
       No custom fields in this library yet. Create custom fields in the Field Designer and assign them to this library.
     </p>
   </div>
 
   <!-- Standard Fields Section - Only show when "Standard" (null) is selected -->
   <div *ngIf="service.fieldTypeDropdownLibrary() === null">
-    <div class="grid grid-cols-4 gap-2">
+    <div class="fields-grid">
       <button 
         *ngFor="let item of visibleFieldTypesList()"
         (click)="onFieldClick(item.key)"
-        class="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 transition-all cursor-pointer bg-white"
+        class="btn-field-item"
       >
-        <div class="text-gray-600">
+        <div class="field-item-icon">
           <app-icon [key]="item.key" className="w-5 h-5"></app-icon>
         </div>
-        <span class="text-xs text-gray-700">{{ item.value.label }}</span>
+        <span class="field-item-label">{{ item.value.label }}</span>
       </button>
     </div>
   </div>
