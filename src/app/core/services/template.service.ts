@@ -37,6 +37,7 @@ export class TemplateService {
   // Modal & Navigation States
   readonly showPicker = signal<number | null>(null);
   readonly showPreview = signal<boolean>(false);
+  readonly previewInitialTab = signal<'preview' | 'json' | 'yaml'>('preview');
   readonly showFieldDesigner = signal<boolean>(false);
   readonly selectedField = signal<number | null>(null);
   readonly fieldTypeDropdown = signal<number | null>(null);

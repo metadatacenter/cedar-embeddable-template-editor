@@ -22,11 +22,23 @@
         <!-- Preview Toggle -->
         <button
           *ngIf="!service.showPreview()"
-          (click)="service.showPreview.set(true)"
+          (click)="service.showPreview.set(true); service.previewInitialTab.set('preview')"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all bg-white text-gray-700 border-gray-300 hover:border-gray-400 cursor-pointer"
         >
           <app-icon key="eye" className="w-4 h-4"></app-icon>
           <span class="text-sm font-medium">Preview</span>
+        </button>
+
+        <!-- Export Toggle -->
+        <button
+          (click)="service.showPreview.set(true); service.previewInitialTab.set('json')"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all bg-white text-gray-700 border-gray-300 hover:border-gray-400 cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span class="text-sm font-medium">Export</span>
         </button>
         
         <!-- User Menu -->

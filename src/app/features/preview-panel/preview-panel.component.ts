@@ -1,24 +1,40 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TemplateService, FIELD_TYPES } from '../../core/services/template.service';
 import { Field } from '../../core/models/types';
 import { IconComponent } from '../../shared/components/icon/icon.component';
 import { BioPortalSearchModalComponent, BioPortalResult } from '../modals/bioportal-search/bioportal-search.component';
+import { CedarExportPanelComponent } from '../cedar-export-panel/cedar-export-panel.component';
+
+export type PreviewTab = 'preview' | 'json' | 'yaml';
 
 @Component({
   selector: 'app-preview-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconComponent, BioPortalSearchModalComponent],
+  imports: [CommonModule, FormsModule, IconComponent, BioPortalSearchModalComponent, CedarExportPanelComponent],
   templateUrl: './preview-panel.component.html',
   styleUrls: ['./preview-panel.component.scss']
 })
 export class PreviewPanelComponent {
   readonly service = inject(TemplateService);
 
+  readonly activeTab = signal<PreviewTab>('preview');
   readonly selectedTerms = signal<Record<number, any>>({});
   readonly showBioPortalModal = signal(false);
   readonly selectedFieldForSearch = signal<Field | null>(null);
+
+  constructor() {
+    // Sync initial tab from service when the panel first opens
+    effect(() => {
+      const tab = this.service.previewInitialTab();
+      this.activeTab.set(tab);
+    });
+  }
+
+  setTab(tab: PreviewTab): void {
+    this.activeTab.set(tab);
+  }
 
   getFieldPreviewLabel(type: string): string {
     return FIELD_TYPES[type]?.preview || '';

@@ -1,17 +1,78 @@
-<div class="h-full overflow-y-auto p-8 bg-gray-50 custom-scrollbar relative">
-  <!-- Preview Header with Close Button -->
-  <div class="absolute top-8 right-8 flex items-center gap-3 z-10">
-    <span class="text-sm font-medium text-gray-600">Preview</span>
+<div class="h-full flex flex-col bg-white overflow-hidden">
+
+  <!-- Tab Bar -->
+  <div class="flex items-center border-b border-gray-200 bg-white flex-shrink-0 px-2">
+    <!-- Preview Tab -->
     <button
-      (click)="service.showPreview.set(false)"
-      class="w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer"
-      title="Close preview"
+      (click)="setTab('preview')"
+      class="flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors cursor-pointer bg-transparent"
+      [class.border-teal-600]="activeTab() === 'preview'"
+      [class.text-teal-700]="activeTab() === 'preview'"
+      [class.border-transparent]="activeTab() !== 'preview'"
+      [class.text-gray-500]="activeTab() !== 'preview'"
+      [class.hover:text-gray-700]="activeTab() !== 'preview'"
     >
-      <app-icon key="settings" className="w-4 h-4 text-gray-600 rotate-45"></app-icon>
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      Preview
     </button>
+
+    <!-- JSON Tab -->
+    <button
+      (click)="setTab('json')"
+      class="flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors cursor-pointer bg-transparent"
+      [class.border-teal-600]="activeTab() === 'json'"
+      [class.text-teal-700]="activeTab() === 'json'"
+      [class.border-transparent]="activeTab() !== 'json'"
+      [class.text-gray-500]="activeTab() !== 'json'"
+      [class.hover:text-gray-700]="activeTab() !== 'json'"
+    >
+      <span class="w-2 h-2 rounded-full bg-orange-400 flex-shrink-0"></span>
+      JSON
+    </button>
+
+    <!-- YAML Tab -->
+    <button
+      (click)="setTab('yaml')"
+      class="flex items-center gap-1.5 px-4 py-3 text-xs font-medium border-b-2 transition-colors cursor-pointer bg-transparent"
+      [class.border-teal-600]="activeTab() === 'yaml'"
+      [class.text-teal-700]="activeTab() === 'yaml'"
+      [class.border-transparent]="activeTab() !== 'yaml'"
+      [class.text-gray-500]="activeTab() !== 'yaml'"
+      [class.hover:text-gray-700]="activeTab() !== 'yaml'"
+    >
+      <span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+      YAML
+    </button>
+
+    <!-- Close button (right-aligned) -->
+    <div class="ml-auto pr-2">
+      <button
+        (click)="service.showPreview.set(false)"
+        class="w-7 h-7 rounded-full bg-gray-100 border border-gray-200 hover:bg-gray-200 transition-colors flex items-center justify-center cursor-pointer text-gray-500 hover:text-gray-700"
+        title="Close panel"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
   </div>
 
-  <div class="max-w-2xl mx-auto">
+  <!-- CEDAR Export Panel (JSON / YAML tabs) -->
+  <app-cedar-export-panel
+    *ngIf="activeTab() === 'json' || activeTab() === 'yaml'"
+    class="flex-1 min-h-0 block"
+    [style.display]="'flex'"
+    [style.flexDirection]="'column'"
+  ></app-cedar-export-panel>
+
+  <!-- Preview Content -->
+  <div *ngIf="activeTab() === 'preview'" class="flex-1 overflow-y-auto p-8 bg-gray-50 custom-scrollbar">
+    <div class="max-w-2xl mx-auto">
     <!-- Form Title and Description -->
     <div class="mb-8">
       <h1 class="text-lg font-medium text-gray-900 mb-2">{{ service.templateName() }}</h1>
