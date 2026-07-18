@@ -1,0 +1,22 @@
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+.border-l-3 {
+  border-left-width: 3px;
+}
+/* Simple hover class styling */
+button.border-l-3:hover {
+  border-left-color: #2D6F5F !important;
+  background-color: #E8F3F0 !important;
+}
