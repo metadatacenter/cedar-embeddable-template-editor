@@ -95,11 +95,9 @@
           
           <div *ngIf="expandedBuiltIn()" class="pb-2 animate-fade-in">
             <button
-              *ngFor="let item of visibleFieldTypesList"
+              *ngFor="let item of visibleFieldTypesList()"
               (click)="service.addField(item.key, service.fields().length)"
               class="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-50 transition-colors group text-left cursor-pointer border-l-3 border-transparent"
-              [style.hoverBorderLeftColor]="service.COLORS.primary"
-              [style.hoverBackgroundColor]="service.COLORS.primaryLight"
             >
               <span class="text-gray-600">
                 <app-icon [key]="item.key" className="w-5 h-5"></app-icon>

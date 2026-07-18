@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { TemplateService, FIELD_TYPES } from '../../core/services/template.service';
@@ -20,12 +20,12 @@ export class FieldLibrarySidebarComponent {
   readonly expandedBuiltIn = signal(true);
   readonly expandedLibraries = signal<Set<number>>(new Set());
 
-  get visibleFieldTypesList() {
+  readonly visibleFieldTypesList = computed(() => {
     const visible = this.service.preferences().visibleFieldTypes;
     return Object.entries(FIELD_TYPES)
       .filter(([key]) => visible[key] !== false)
       .map(([key, value]) => ({ key, value }));
-  }
+  });
 
   getFieldIconKey(field: Field): string {
     if (field.customFieldId) {

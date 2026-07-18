@@ -69,11 +69,9 @@
     <div class="grid grid-cols-4 gap-2">
       <button 
         *ngFor="let customField of libraryCustomFields"
-        (click)="service.addCustomFieldToTemplate(customField, insertPosition)"
+        (click)="onCustomFieldClick(customField)"
         class="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 transition-all cursor-pointer bg-white"
         [title]="customField.description"
-        [style.hoverBackgroundColor]="service.COLORS.primaryLight"
-        [style.hoverBorderColor]="service.COLORS.border"
       >
         <div class="text-gray-600">
           <app-icon [key]="customField.baseType" className="w-5 h-5"></app-icon>
@@ -96,11 +94,9 @@
   <div *ngIf="service.fieldTypeDropdownLibrary() === null">
     <div class="grid grid-cols-4 gap-2">
       <button 
-        *ngFor="let item of visibleFieldTypesList"
-        (click)="service.addField(item.key, insertPosition)"
+        *ngFor="let item of visibleFieldTypesList()"
+        (click)="onFieldClick(item.key)"
         class="flex flex-col items-center gap-2 p-3 rounded-lg border border-gray-200 transition-all cursor-pointer bg-white"
-        [style.hoverBackgroundColor]="service.COLORS.primaryLight"
-        [style.hoverBorderColor]="service.COLORS.border"
       >
         <div class="text-gray-600">
           <app-icon [key]="item.key" className="w-5 h-5"></app-icon>

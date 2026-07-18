@@ -1,4 +1,4 @@
-import { Component, Input, inject, signal, ElementRef, HostListener } from '@angular/core';
+import { Component, Input, inject, signal, ElementRef, HostListener, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TemplateService, FIELD_TYPES } from '../../core/services/template.service';
@@ -41,17 +41,25 @@ export class FieldTypePickerComponent {
       : [];
   }
 
-  get visibleFieldTypesList() {
+  readonly visibleFieldTypesList = computed(() => {
     const visible = this.service.preferences().visibleFieldTypes;
     return Object.entries(FIELD_TYPES)
       .filter(([key]) => visible[key] !== false)
       .map(([key, value]) => ({ key, value }));
-  }
+  });
 
   handleSelectLibrary(id: number | null) {
     this.service.fieldTypeDropdownLibrary.set(id);
     this.showDropdown.set(false);
     this.searchText = '';
+  }
+
+  onFieldClick(key: string) {
+    this.service.addField(key, this.insertPosition);
+  }
+
+  onCustomFieldClick(field: CustomField) {
+    this.service.addCustomFieldToTemplate(field, this.insertPosition);
   }
 
   close() {
